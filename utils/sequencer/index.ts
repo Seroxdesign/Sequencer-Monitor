@@ -11,10 +11,10 @@ export const fetchJobAddresses = async (sequencerContract: any) => {
   return jobAddresses;
 };
 
-export const handleConsecutiveWorkableBlocks = (consecutiveWorkableBlocks: { [jobAddress: string]: number }, jobAddress: string, network: string, blocknumber: number, canWork: any) => {
+export const handleConsecutiveWorkableBlocks = async (consecutiveWorkableBlocks: { [jobAddress: string]: number }, jobAddress: string, network: string, blocknumber: number, canWork: any) => {
   try {
     if (canWork[0] === false && consecutiveWorkableBlocks[`${jobAddress}-${network}`] > 0) {
-      notifyDiscord(`
+      await notifyDiscord(`
       ------------------------------------
       ${jobAddress} has been worked after ${consecutiveWorkableBlocks[`${jobAddress}-${network}`]} consecutive blocks, at block ${blocknumber} on network ${network}
       ------------------------------------
@@ -29,7 +29,7 @@ export const handleConsecutiveWorkableBlocks = (consecutiveWorkableBlocks: { [jo
     if (canWork[0] === true) {
       consecutiveWorkableBlocks[`${jobAddress}-${network}`] = (consecutiveWorkableBlocks[`${jobAddress}-${network}`] ?? 0) + 1;
       if (consecutiveWorkableBlocks[`${jobAddress}-${network}`] >= 10) {
-        notifyDiscord(`
+        await notifyDiscord(`
         ------------------------------------
         Warning!!!! Workable job has not been worked for ${consecutiveWorkableBlocks[`${jobAddress}-${network}`]} consecutive blocks:
         ------------------------------------

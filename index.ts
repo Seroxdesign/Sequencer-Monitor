@@ -33,7 +33,7 @@ const monitorUnworkedJobsForAllNetworks = async (blocknumber: number) => {
             for (let k = 0; k < jobAddresses.length; k++) {
                 const jobAddress = jobAddresses[k];
                 const canWork = workableStatusResponses[k];
-                handleConsecutiveWorkableBlocks(consecutiveWorkableBlocks, jobAddress, network, blocknumber, canWork);
+                await handleConsecutiveWorkableBlocks(consecutiveWorkableBlocks, jobAddress, network, blocknumber, canWork);
             }
         }
         console.timeEnd('monitorUnworkedJobsForAllNetworks');
