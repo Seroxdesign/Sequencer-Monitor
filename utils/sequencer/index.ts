@@ -1,14 +1,11 @@
 import { ethers } from "ethers";
 import { notifyDiscord } from "../discord/notifyDiscord";
 
-export const fetchJobAddresses = async (sequencerContract: any) => {
+export const fetchJobAddresses = async (sequencerContract: ethers.Contract): Promise<string[]> => {
   const numJobs = await sequencerContract.numJobs();
-  const jobAddresses = [];
-  for (let j = 0; j < numJobs; j++) {
-      const jobAddress = await sequencerContract.jobAt(j);
-      jobAddresses.push(jobAddress);
-  }
-  return jobAddresses;
+  return Promise.all(
+    Array.from({ length: Number(numJobs) }, (_, j) => sequencerContract.jobAt(j))
+  );
 };
 
 export const handleConsecutiveWorkableBlocks = async (consecutiveWorkableBlocks: { [jobAddress: string]: number }, jobAddress: string, network: string, blocknumber: number, canWork: any) => {
@@ -45,8 +42,8 @@ export const handleConsecutiveWorkableBlocks = async (consecutiveWorkableBlocks:
   }
 };
 
-// Batch job workable status requests for each network
 export const getWorkableStatusBatched = async (network: string, jobAddresses: string[], jobContractCache: { [jobAddress: string]: ethers.Contract }) => {
-  const promises = jobAddresses.map((jobAddress: string) => jobContractCache[jobAddress].workable(network));
-  return await Promise.all(promises);
+  return Promise.all(
+    jobAddresses.map(jobAddress => jobContractCache[jobAddress].workable(network))
+  );
 };
